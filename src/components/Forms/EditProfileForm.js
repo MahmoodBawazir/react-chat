@@ -64,7 +64,7 @@ const EditProfileForm = (props) => {
 
     setSuccess('')
 
-    if (file && file.size > 1000000) {
+    if (file && file.size > 1 * 1024 * 1024) {
       setAvatarSizeError('Try uploading a file less than 1MB.')
       setIsLoading(false)
     } else {
