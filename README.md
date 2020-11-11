@@ -1,5 +1,7 @@
 [React Chat app with firebase](https://react-chat-d1ebe.web.app/).
 
+[![React chat screenshot](https://i.postimg.cc/T2ZDcJvf/Screen-Shot-2020-11-11-at-5-48-59-PM-1.png)](https://postimg.cc/yWyx19Nb)
+
 ## Available Scripts
 
 In the project directory, you can run:
