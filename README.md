@@ -41,13 +41,17 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 
 Before you begin make sure you have installed the [Firebase CLI](https://firebase.google.com/docs/cli) and configured the [Firebase Local Emulator Suite](https://firebase.google.com/docs/emulator-suite/install_and_configure)
 
-## Run Tests
+### Run Tests
 
 To run the Cloud Firestore tests:
 
 ```
 firebase emulators:exec --only firestore "npm run test-firestore"
 ```
+
+### Deploy
+
+`yarn deploy`
 
 ## Learn More
 
