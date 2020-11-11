@@ -1,0 +1,61 @@
+// Scope Rules to Specific Operations
+// Rules can be enforced on various read/write operations that occur in a clientside app. We can scope rules to each of the follow read operations.
+// allow read - Allow list and get documents.
+// allow get - When reading a single document.
+// allow list - When querying a collection.
+
+// Write operations can be scoped as follows:
+// allow create - When setting new data with docRef.set() or collectionRef.add()
+// allow update - When updating data with docRef.update() or set()
+// allow delete - When deleting data with docRef.delete()
+// allow write - Applies rule to create, update, and delete.
+
+// Request vs Resource
+// Firestore gives us access to several special variables that can be used to compose rules.
+// request - contains incoming data (including auth and time)
+// resource - existing data that is being requested
+
+rules_version = '2';
+service cloud.firestore {
+  function isSignedIn(){
+    return request.auth.uid != null;
+  }
+
+
+  function isTimestamp(value){
+    return value == request.time;
+  }
+
+  // Does the logged-in user match the requested userId?
+  function isUser(userId) {
+    return request.auth.uid == userId;
+  }
+
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /channels/{channel} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.keys().hasAll(['name', 'details', 'createdBy', 'createdAt']) && isTimestamp(request.resource.data.createdAt);
+    }
+    
+    match /messages/{channelId} {
+      allow read: if isSignedIn();
+    	allow create: if isSignedIn() && exists(/databases/$(database)/documents/channels/$(channelId));
+      
+      match /data/{message} {
+        allow read: if isSignedIn();
+      	allow create: if isSignedIn() && request.resource.data.keys().hasAll(['user', 'content', 'timestamp']) && isTimestamp(request.resource.data.timestamp);
+        allow update: if ('timestamp' in request.resource.data) && isTimestamp(request.resource.data.timestamp);
+      }
+    }
+
+    match /users/{userId} {
+    	allow read;
+      allow create: if request.resource.data.keys().hasAll(['id', 'username', 'avatar', 'email', 'emailVerified', 'joinedAt', 'modifiedAt']) && isTimestamp(request.resource.data.joinedAt) && isTimestamp(request.resource.data.modifiedAt);
+      allow update: if isSignedIn() && isUser(userId) && ('modifiedAt' in request.resource.data) && isTimestamp(request.resource.data.modifiedAt);
+    }
+  }
+}
